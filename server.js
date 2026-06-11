@@ -10,6 +10,7 @@ const DEFAULT_REASON = "该方向具备进一步技术拆解、文献检索和�
 const MAX_EXPANSION_KEYWORDS = 30;
 const aiCache = new Map();
 const CACHE_TTL_MS = 30 * 60 * 1000;
+let lastAIError = "";
 const VALID_TYPES = [
   "mechanism",
   "material",
@@ -467,9 +468,15 @@ async function callAI({ systemPrompt, userPrompt, temperature, provider = {} }) 
   } finally {
     clearTimeout(timeout);
   }
-  if (!response.ok) throw new Error(`AI provider returned ${response.status}`);
+  if (!response.ok) {
+    const errorBody = await response.text();
+    const safeBody = errorBody.slice(0, 500).replace(/sk-[A-Za-z0-9_-]+/g, "[redacted]");
+    throw new Error(`AI provider returned ${response.status}: ${safeBody}`);
+  }
   const result = await response.json();
-  return parseJsonContent(result.choices?.[0]?.message?.content);
+  const parsed = parseJsonContent(result.choices?.[0]?.message?.content);
+  lastAIError = "";
+  return parsed;
 }
 
 const expansionSystemPrompt = `你是一个跨学科家电技术创新助手，服务对象是家电领域的研发专家、产品创新专家、设计研究人员和技术战略人员。
@@ -670,6 +677,8 @@ app.post("/api/expand-keywords", async (req, res) => {
     setCached(cacheKey, normalized);
     res.json({ ...normalized, meta: { mode: "ai", cached: false, classification } });
   } catch (error) {
+    lastAIError = cleanText(error && error.message, "AI service unavailable").slice(0, 600);
+    console.error("expand-keywords AI fallback:", lastAIError);
     res.json({
       ...normalizeExpansion(buildMockExpansion(input), input),
       meta: { mode: "mock", fallback_reason: "AI service unavailable", classification }
@@ -687,6 +696,8 @@ app.post("/api/generate-search-query", async (req, res) => {
     });
     res.json({ ...normalizeSearchQuery(raw, input), meta: { mode: "ai" } });
   } catch (error) {
+    lastAIError = cleanText(error && error.message, "AI service unavailable").slice(0, 600);
+    console.error("generate-search-query AI fallback:", lastAIError);
     res.json({
       ...normalizeSearchQuery(buildMockSearchQuery(input), input),
       meta: { mode: "mock", fallback_reason: "AI service unavailable" }
@@ -695,7 +706,13 @@ app.post("/api/generate-search-query", async (req, res) => {
 });
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, mode: process.env.AI_API_KEY ? "ai" : "mock", model: cleanText(process.env.AI_MODEL, "qwen-turbo") });
+  res.json({
+    ok: true,
+    mode: process.env.AI_API_KEY ? "ai" : "mock",
+    model: cleanText(process.env.AI_MODEL, "qwen-turbo"),
+    ai_provider: cleanText(process.env.AI_BASE_URL, "https://dashscope.aliyuncs.com/compatible-mode/v1").replace(/^https?:\/\//, ""),
+    last_ai_error: lastAIError || null
+  });
 });
 
 app.get("*", (_req, res) => {
