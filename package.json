@@ -1,0 +1,18 @@
+{
+  "name": "appliance-innovation-keyword-map",
+  "version": "1.0.0",
+  "private": true,
+  "description": "面向家电专家的技术创新关键词发散与文献检索辅助工具",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

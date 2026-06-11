@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家电技术创新引导器</title>
+  <style>
+    :root{--bg:#f4f3ee;--paper:#fffdf9;--ink:#293936;--muted:#788782;--line:#dde4df;--accent:#527d77;--gold:#a98645;--shadow:0 16px 42px rgba(48,67,65,.09)}
+    *{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:radial-gradient(circle at 8% 3%,#e3ede7,transparent 25%),radial-gradient(circle at 96% 8%,#eee5d2,transparent 28%),var(--bg)}
+    button,input,textarea{font:inherit}button{cursor:pointer}.shell{width:min(1180px,calc(100% - 32px));margin:auto;padding:28px 0 48px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px}.eyebrow{margin:0 0 5px;color:#758d88;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}h1{margin:0;font-size:30px;letter-spacing:-.04em}.subtitle{margin:7px 0 0;color:var(--muted);font-size:12px}.back,.primary,.copy{border:0;border-radius:10px}.back{padding:10px 14px;color:#456862;background:#e7efec}.primary{min-height:46px;padding:0 20px;color:#fff;background:var(--accent);font-weight:650}.primary:disabled{cursor:not-allowed;opacity:.45}.panel{margin-top:18px;padding:20px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.91);box-shadow:var(--shadow)}.context{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.context-card{padding:13px;border:1px solid #e3e8e4;border-radius:11px;background:#fafbf9}.context-card span{display:block;margin-bottom:7px;color:#8b9894;font-size:9px;letter-spacing:.12em}.context-card strong{font-size:12px;line-height:1.55}.tags{display:flex;flex-wrap:wrap;gap:5px}.tag{padding:5px 7px;border-radius:6px;color:#526b65;background:#e9f0ed;font-size:10px}.guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.guide h2,.results h2{margin:0 0 6px;font-size:16px}.guide p,.results p{margin:0;color:var(--muted);font-size:10px;line-height:1.6}.goals{display:flex;flex-wrap:wrap;gap:7px;margin:15px 0}.goal{padding:8px 10px;border:1px solid #e3dbc6;border-radius:8px;color:#776b50;background:#fffcf4;font-size:10px}.goal.active{color:#fff;background:var(--gold);border-color:var(--gold)}textarea{width:100%;min-height:112px;padding:12px;border:1px solid #dfe5e1;border-radius:10px;outline:0;resize:vertical;background:#fafbf9;font-size:11px;line-height:1.6}textarea:focus{border-color:#abc2bc;background:#fff}.hypothesis{padding:15px;border:1px solid #e6ddc8;border-radius:12px;color:#675c43;background:#fbf6e9;font-size:11px;line-height:1.7}.actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}.status{color:var(--muted);font-size:10px}.results{display:none}.results.visible{display:block}.concepts{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-top:15px}.concept{padding:16px;border:1px solid #e3ddcc;border-radius:12px;background:#fffcf4}.concept h3{margin:0 0 10px;font-size:13px}.concept p{margin:7px 0;color:#6c675a;font-size:10px}.concept b{color:#95763d}.copy{margin-top:8px;padding:6px 9px;color:#586e68;background:#edf2ef;font-size:9px}.query{margin-top:12px;padding:14px;border:1px solid #e0e6e2;border-radius:11px;background:#fafbf9;color:#465954;font-size:10px;line-height:1.7;word-break:break-word}.empty{padding:22px;color:var(--muted);text-align:center;font-size:11px}@media(max-width:800px){.context,.guide-grid,.concepts{grid-template-columns:1fr}.top{align-items:start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <div><p class="eyebrow">Innovation Guide</p><h1>家电技术创新引导器</h1><p class="subtitle">基于探索路径和锁定关键词，形成跨技术组合假设并验证新颖性。</p></div>
+      <button class="back" id="backButton" type="button">返回文献检索</button>
+    </header>
+
+    <section class="panel context" id="contextPanel"></section>
+
+    <section class="panel guide">
+      <div class="guide-grid">
+        <div>
+          <h2>选择创新目标</h2>
+          <p>目标会影响技术组合方式、方案评价重点和后续验证方向。</p>
+          <div class="goals" id="goalList"></div>
+          <textarea id="innovationBrief" placeholder="补充创新约束与场景，例如：低成本、无需耗材、适合老产品升级、目标能耗降低 20%"></textarea>
+        </div>
+        <div>
+          <h2>组合假设预览</h2>
+          <p>优先组合锁定关键词，并结合最近探索路径形成创新假设。</p>
+          <div class="hypothesis" id="hypothesis"></div>
+          <div class="actions"><span class="status" id="status">等待生成</span><button class="primary" id="generateButton" type="button">生成创新方案</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel results" id="resultsPanel">
+      <h2>创新方案输出</h2>
+      <p>以下方案是待验证假设，需要结合论文、专利、实验与商业约束进一步确认。</p>
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <script>
+    const GOALS=["突破性能上限","降低能耗与成本","解决核心用户痛点","跨领域技术迁移","高端差异化产品"];
+    const context=JSON.parse(localStorage.getItem("applianceInnovationContext")||"{}");
+    const state={goal:GOALS[0],loading:false,result:null};
+    const $=id=>document.getElementById(id);
+    const esc=text=>String(text??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+    const terms=()=>[...new Set([...(context.pinnedKeywords||[]),...(context.path||[]).slice(-3)])].slice(0,6);
+
+    function renderContext(){
+      const tags=list=>list?.length?`<div class="tags">${list.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>`:"<strong>暂无</strong>";
+      $("contextPanel").innerHTML=`<div class="context-card"><span>原始技术问题</span><strong>${esc(context.originalQuestion||"尚未从检索页生成探索路径")}</strong></div><div class="context-card"><span>探索路径</span>${tags(context.path)}</div><div class="context-card"><span>锁定关键词</span>${tags(context.pinnedKeywords)}</div>`;
+    }
+    function renderGuide(){
+      $("goalList").innerHTML=GOALS.map(goal=>`<button class="goal ${goal===state.goal?"active":""}" data-goal="${esc(goal)}">${esc(goal)}</button>`).join("");
+      document.querySelectorAll("[data-goal]").forEach(button=>button.onclick=()=>{state.goal=button.dataset.goal;renderGuide()});
+      const selected=terms();
+      $("hypothesis").innerHTML=selected.length>=2?`尝试组合 <b>${selected.map(esc).join(" × ")}</b>，以实现“<b>${esc(state.goal)}</b>”。AI 将分析可能的协同机理、新颖性、关键风险和验证检索式。`:"请先在文献检索页探索并锁定至少两个有价值的关键词，再进入创新引导。";
+      $("generateButton").disabled=state.loading||selected.length<2;
+      $("status").textContent=state.loading?"正在分析技术组合…":"等待生成";
+    }
+    function normalize(data={}){return{concepts:Array.isArray(data.innovation_concepts)?data.innovation_concepts:[],novelty_query:data.novelty_query||"暂无结果",innovative_query:data.innovative_query||"暂无结果",meta:data.meta||{}}}
+    async function generate(){
+      state.loading=true;renderGuide();$("resultsPanel").classList.add("visible");$("results").innerHTML='<div class="empty">正在生成创新组合方案…</div>';
+      const payload={original_question:context.originalQuestion||"家电技术创新",path:context.path||[],pinned_keywords:context.pinnedKeywords||[],innovation_goal:state.goal,innovation_brief:$("innovationBrief").value.trim(),mode:"innovation_guide"};
+      try{const response=await fetch("/api/generate-search-query",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});if(!response.ok)throw new Error("请求失败");state.result=normalize(await response.json())}catch{const quoted=terms().map(x=>`"${x}"`);state.result=normalize({innovation_concepts:[{title:"跨技术组合假设",concept:`将 ${terms().join(" + ")} 组合用于${state.goal}。`,novelty:"该组合来自不同技术路径，需要进一步检索验证公开情况。",key_risk:"需要验证技术耦合收益、成本和可靠性。",validation_query:`(${quoted.join(" AND ")}) AND (hybrid OR integrated)`}],novelty_query:`(${quoted.join(" AND ")}) AND (hybrid OR coupled OR novel)`,innovative_query:`(${quoted[0]||'"home appliance"'}) AND (cross-industry OR biomimetic OR "functional materials")`})}
+      state.loading=false;renderGuide();renderResults();$("resultsPanel").scrollIntoView({behavior:"smooth"});
+    }
+    function renderResults(){const data=state.result;if(!data)return;$("results").innerHTML=`<div class="concepts">${data.concepts.length?data.concepts.map((x,i)=>`<article class="concept"><h3>${esc(x.title||"创新组合方案")}</h3><p><b>组合逻辑</b><br>${esc(x.concept||"暂无结果")}</p><p><b>潜在新颖性</b><br>${esc(x.novelty||"暂无结果")}</p><p><b>关键风险</b><br>${esc(x.key_risk||"暂无结果")}</p><button class="copy" data-copy="${i}">复制验证检索式</button></article>`).join(""):'<div class="empty">暂无创新方案</div>'}</div><div class="query"><b>组合新颖性检索式</b><br>${esc(data.novelty_query)}<br><button class="copy" data-query-copy="novelty_query">复制检索式</button></div><div class="query"><b>跨领域启发检索式</b><br>${esc(data.innovative_query)}<br><button class="copy" data-query-copy="innovative_query">复制检索式</button></div>`;document.querySelectorAll("[data-copy]").forEach(button=>button.onclick=async()=>{await navigator.clipboard.writeText(data.concepts[Number(button.dataset.copy)]?.validation_query||"");button.textContent="已复制"});document.querySelectorAll("[data-query-copy]").forEach(button=>button.onclick=async()=>{await navigator.clipboard.writeText(data[button.dataset.queryCopy]||"");button.textContent="已复制"})}
+    $("backButton").onclick=()=>window.location.href="/";
+    $("generateButton").onclick=generate;
+    renderContext();renderGuide();
+  </script>
+</body>
+</html>

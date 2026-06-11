@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: appliance-innovation-keyword-tool
+    runtime: node
+    plan: free
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: AI_BASE_URL
+        value: https://dashscope.aliyuncs.com/compatible-mode/v1
+      - key: AI_MODEL
+        value: qwen-turbo
+      - key: AI_API_KEY
+        sync: false
