@@ -42,6 +42,8 @@ npm start
 
 项目已包含 `render.yaml` 和 `Dockerfile`，推荐使用 Render Blueprint 部署。上线后所有电脑直接访问同一个网址，不需要分别安装 Node.js 或配置环境。
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/JiaqiNiu-77/Brainstorming-and-Literature-Search-Platform)
+
 首次部署步骤：
 
 1. 将项目上传到 GitHub，确认不要上传 `.env`。
